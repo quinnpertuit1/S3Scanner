@@ -247,6 +247,12 @@ def listBucket(bucketName):
         Returns:
             None if no errors were encountered
     """
+    stopwords = ['png', 'jpg', 'jpeg' 'html' 'css' 'js' 'gif' 'eps' 'svg' 'mp4' 'mp3' 'avi' 'mkv' 'aif' 'mpa' ...
+                 'ogg' 'wav' 'wma' 'wpl' 'fnt' 'fon' 'otf' 'ttf' 'ai' 'bmp' 'ico' 'ps' 'psd' 'tif' 'tiff' 'asp' ...
+                 'cgi' 'cfm' 'htm' 'jsp' 'part' '3gp' 'flv' 'h264' 'm4v' 'mov' 'mpg' 'mpeg' 'rm' 'swf' 'vob' 'wmv' 'heic'...
+                 'asp' 'aspx' 'dll' 'divx' 'bmp' 'id' 'webp' 'php']
+    
+  
 
     # Dump the bucket into bucket folder
     bucketDir = './list-buckets/' + bucketName + '.txt'
@@ -261,6 +267,7 @@ def listBucket(bucketName):
             s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
         
         for page in s3.get_paginator("list_objects_v2").paginate(Bucket=bucketName):
+            filtered_page = filter(lambda w: w not in stopwords, re.split(r'\W+', page.lower()))
             if 'Contents' in page:
                 for item in page['Contents']:
                     o = item['LastModified'].strftime('%Y-%m-%d %H:%M:%S') + " " + str(item['Size']) + " " + item['Key']
